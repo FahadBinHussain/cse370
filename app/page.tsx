@@ -96,11 +96,28 @@ export default function HomePage() {
         setCampaigns(recentData.campaigns || []);
       }
 
-      // Fetch platform stats
-      const statsResponse = await fetch("/api/stats/platform");
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData);
+      // Fetch platform stats with timeout
+      try {
+        const statsResponse = await Promise.race([
+          fetch("/api/stats/platform"),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Stats API timeout')), 5000)
+          )
+        ]) as Response;
+        
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        }
+      } catch (statsError) {
+        console.error("Error fetching stats, using defaults:", statsError);
+        // Use default stats if API fails
+        setStats({
+          totalCampaigns: 0,
+          totalDonations: 0,
+          totalRaised: 0,
+          activeDonors: 0,
+        });
       }
     } catch (error) {
       console.error("Error fetching homepage data:", error);
