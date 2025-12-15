@@ -1,149 +1,115 @@
-import { createClient } from "@supabase/supabase-js";
+/**
+ * Storage and Real-time Utilities
+ * This file provides image storage via Pixvid and placeholder real-time features
+ */
 
-// Use NEXT_PUBLIC_ env vars for client-side access
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import { uploadImageToPixvid, deleteImageFromPixvid, getOptimizedImageUrl } from './pixvid';
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Re-export Pixvid functions for backward compatibility
+export { uploadImageToPixvid, deleteImageFromPixvid, getOptimizedImageUrl };
 
-// Real-time subscription for campaign donations
+/**
+ * Upload campaign image
+ * @param file - Image file to upload
+ * @param campaignId - Campaign ID for organization
+ * @returns URL of uploaded image
+ */
+export async function uploadCampaignImage(file: File | Blob, campaignId?: number) {
+  const folder = campaignId ? `campaigns/${campaignId}` : 'campaigns';
+  const result = await uploadImageToPixvid(file, folder);
+  
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to upload image');
+  }
+  
+  return result.url;
+}
+
+/**
+ * Delete campaign image
+ * @param imageUrl - URL or ID of the image to delete
+ */
+export async function deleteCampaignImage(imageUrl: string) {
+  // Extract image ID from URL if needed
+  const imageId = imageUrl.split('/').pop() || imageUrl;
+  return deleteImageFromPixvid(imageId);
+}
+
+/**
+ * Upload multiple campaign images
+ * @param files - Array of image files
+ * @param campaignId - Campaign ID for organization
+ * @returns Array of uploaded image URLs
+ */
+export async function uploadMultipleCampaignImages(
+  files: (File | Blob)[],
+  campaignId?: number
+): Promise<string[]> {
+  const folder = campaignId ? `campaigns/${campaignId}` : 'campaigns';
+  const uploadPromises = files.map(file => uploadImageToPixvid(file, folder));
+  const results = await Promise.all(uploadPromises);
+  
+  // Filter successful uploads and return URLs
+  return results
+    .filter(result => result.success)
+    .map(result => result.url);
+}
+
+// Placeholder real-time functions (to be implemented with WebSockets or similar)
 export const subscribeToDonations = (
   campaignId: number,
   callback: (donation: any) => void,
 ) => {
-  return supabase
-    .channel(`donations-${campaignId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "Donation",
-        filter: `campaign_id=eq.${campaignId}`,
-      },
-      callback,
-    )
-    .subscribe();
+  console.warn('Real-time donations not yet implemented. Consider using WebSockets or polling.');
+  return { unsubscribe: () => {} };
 };
 
-// Real-time subscription for campaign updates
 export const subscribeToCampaignUpdates = (
   campaignId: number,
   callback: (update: any) => void,
 ) => {
-  return supabase
-    .channel(`campaign-${campaignId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "UPDATE",
-        schema: "public",
-        table: "Campaign",
-        filter: `campaign_id=eq.${campaignId}`,
-      },
-      callback,
-    )
-    .subscribe();
+  console.warn('Real-time campaign updates not yet implemented. Consider using WebSockets or polling.');
+  return { unsubscribe: () => {} };
 };
 
-// Real-time subscription for comments
 export const subscribeToComments = (
   campaignId: number,
   callback: (comment: any) => void,
 ) => {
-  return supabase
-    .channel(`comments-${campaignId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "Comment",
-        filter: `campaign_id=eq.${campaignId}`,
-      },
-      callback,
-    )
-    .subscribe();
+  console.warn('Real-time comments not yet implemented. Consider using WebSockets or polling.');
+  return { unsubscribe: () => {} };
 };
 
-// Real-time subscription for verification status changes
-export const subscribeToVerificationUpdates = (
-  campaignId: number,
-  callback: (verification: any) => void,
+export const subscribeToNotifications = (
+  userId: number,
+  callback: (notification: any) => void,
 ) => {
-  return supabase
-    .channel(`verification-${campaignId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "Verification",
-        filter: `campaign_id=eq.${campaignId}`,
-      },
-      callback,
-    )
-    .subscribe();
+  console.warn('Real-time notifications not yet implemented. Consider using WebSockets or polling.');
+  return { unsubscribe: () => {} };
 };
 
-// Broadcast donation events for real-time progress updates
 export const broadcastDonation = async (campaignId: number, donation: any) => {
-  return supabase.channel(`donations-${campaignId}`).send({
-    type: "broadcast",
-    event: "donation",
-    payload: donation,
-  });
+  console.warn('Real-time broadcast not yet implemented. Consider using WebSockets or similar.');
+  return { error: null };
 };
 
-// Helper function to unsubscribe from all channels
-export const unsubscribeAll = () => {
-  supabase.removeAllChannels();
+export const cleanupChannels = () => {
+  console.warn('Channel cleanup not needed without real-time implementation.');
 };
 
-// Helper function to get campaign progress in real-time
-export const getCampaignProgress = async (campaignId: number) => {
-  const { data, error } = await supabase
-    .from("Campaign")
-    .select("currentAmount, goalAmount")
-    .eq("campaign_id", campaignId)
-    .single();
-
-  if (error) {
-    console.error("Error fetching campaign progress:", error);
-    return null;
-  }
-
-  return data;
+export const getActiveUsers = async (campaignId: number) => {
+  console.warn('Active users tracking not yet implemented.');
+  return { data: [], error: null };
 };
 
-// Real-time presence for active users on a campaign page
-export const subscribeToPresence = (campaignId: number, userId: string) => {
-  const channel = supabase.channel(`presence-${campaignId}`, {
-    config: {
-      presence: {
-        key: userId,
-      },
-    },
-  });
-
-  channel
-    .on("presence", { event: "sync" }, () => {
-      console.log("Online users:", channel.presenceState());
-    })
-    .on("presence", { event: "join" }, ({ newPresences }) => {
-      console.log("New users joined:", newPresences);
-    })
-    .on("presence", { event: "leave" }, ({ leftPresences }) => {
-      console.log("Users left:", leftPresences);
-    })
-    .subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        await channel.track({
-          user_id: userId,
-          online_at: new Date().toISOString(),
-        });
-      }
-    });
-
-  return channel;
+export const trackUserPresence = (
+  campaignId: number,
+  userId: number,
+  userName: string,
+) => {
+  console.warn('User presence tracking not yet implemented. Consider using WebSockets.');
+  return {
+    subscribe: () => {},
+    unsubscribe: () => {},
+  };
 };

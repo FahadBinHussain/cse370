@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { uploadImageToPixvid } from "@/lib/pixvid";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("image") as File;
+    const campaignId = formData.get("campaignId") as string;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -43,28 +45,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExtension = file.name.split(".").pop();
-    const fileName = `${session.user.id}-${timestamp}.${fileExtension}`;
+    // Upload to Pixvid
+    const folder = campaignId ? `campaigns/${campaignId}` : `users/${session.user.id}`;
+    const result = await uploadImageToPixvid(file, folder);
 
-    // Convert file to base64 for storage (temporary solution)
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString("base64");
-
-    // For now, we'll return the file data to be handled by the client
-    // In a production environment, you would upload to your preferred storage service
-    const mockUrl = `data:${file.type};base64,${base64}`;
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || "Failed to upload image" },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      url: mockUrl,
-      fileName: fileName,
+      url: result.url,
+      id: result.id,
+      fileName: file.name,
       size: file.size,
       type: file.type,
-      message:
-        "File processed successfully. Note: Using temporary storage - implement proper cloud storage for production.",
     });
   } catch (error) {
     console.error("Upload error:", error);
