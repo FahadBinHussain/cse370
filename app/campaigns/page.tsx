@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,7 +66,7 @@ interface Campaign {
   images?: string[];
 }
 
-export default function CampaignsPage() {
+function CampaignsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state, fetchCampaigns, setSearchQuery, setFilters, resetCampaigns } =
@@ -668,5 +668,17 @@ export default function CampaignsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CampaignsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <CampaignsContent />
+    </Suspense>
   );
 }
