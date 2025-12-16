@@ -52,7 +52,7 @@ const supportCategories = [
   {
     icon: HelpCircle,
     title: "General Questions",
-    description: "Learn how to use UdDog and get started with fundraising"
+    description: "Learn how to use Uddog and get started with fundraising"
   },
   {
     icon: Shield,
@@ -352,10 +352,10 @@ export default function ContactPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">UdDog Headquarters</p>
-                    <p className="text-gray-600 dark:text-gray-300">123 Fundraising Street</p>
-                    <p className="text-gray-600 dark:text-gray-300">San Francisco, CA 94105</p>
-                    <p className="text-gray-600 dark:text-gray-300">United States</p>
+                    <p className="font-medium text-gray-900 dark:text-white">Uddog Headquarters</p>
+                    <p className="text-gray-600 dark:text-gray-300">123 North Motijheel</p>
+                    <p className="text-gray-600 dark:text-gray-300">Dhaka 1214</p>
+                    <p className="text-gray-600 dark:text-gray-300">Bangladesh</p>
                   </div>
 
                   <div className="pt-4 border-t border-gray-200 dark:border-gray-700">

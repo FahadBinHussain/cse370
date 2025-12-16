@@ -85,10 +85,10 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Heart className="h-8 w-8 text-red-500" />
-              <span className="text-2xl font-bold">UdDog</span>
+              <span className="text-2xl font-bold">Uddog</span>
             </Link>
             <p className="text-gray-300 mb-6 text-sm leading-relaxed max-w-md">
-              UdDog is the world's most trusted fundraising platform. We help people
+              Uddog is the world's most trusted fundraising platform. We help people
               raise money for the causes they care about most.
             </p>
 
@@ -215,8 +215,8 @@ export function Footer() {
               <div className="flex items-start text-gray-300 text-sm">
                 <MapPin className="h-4 w-4 mr-2 flex-shrink-0 mt-0.5" />
                 <span>
-                  123 Fundraising St<br />
-                  San Francisco, CA 94102
+                  123 North Motijheel <br />
+                  Dhaka 1214
                 </span>
               </div>
             </div>
@@ -230,7 +230,7 @@ export function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400">
-            <p>© {currentYear} UdDog, Inc. All rights reserved.</p>
+            <p>© {currentYear} Uddog, Inc. All rights reserved.</p>
             <div className="flex items-center space-x-4">
               <span>Made with</span>
               <Heart className="h-4 w-4 text-red-500 fill-current" />

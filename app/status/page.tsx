@@ -100,7 +100,7 @@ export default function StatusPage() {
             <h1 className="text-4xl md:text-6xl font-bold">System Status</h1>
           </div>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-            Real-time status of UdDog platform services and infrastructure
+            Real-time status of Uddog platform services and infrastructure
           </p>
           <Badge className="bg-green-500 text-white text-lg px-4 py-2">
             All Systems Operational

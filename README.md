@@ -1,4 +1,4 @@
-# UdDog Fundraising Platform
+# Uddog Fundraising Platform
 
 A modern, full-stack fundraising platform built with Next.js, enabling users to create campaigns, accept donations, and manage their fundraising efforts.
 

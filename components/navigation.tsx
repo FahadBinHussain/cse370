@@ -251,7 +251,7 @@ export function Navigation({ className }: NavigationProps) {
               onClick={() => setIsOpen(false)}
             >
               <Heart className="h-6 w-6 text-primary mr-2" />
-              <span className="font-bold">UdDog</span>
+              <span className="font-bold">Uddog</span>
             </Link>
           </SheetTitle>
           <SheetDescription>Navigate through the platform</SheetDescription>
@@ -311,7 +311,7 @@ export function Navigation({ className }: NavigationProps) {
           <Link href="/" className="flex items-center space-x-2">
             <Heart className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block text-xl">
-              UdDog
+              Uddog
             </span>
           </Link>
 

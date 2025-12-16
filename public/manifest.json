@@ -1,6 +1,6 @@
 {
-  "name": "UdDog - Fundraising Platform",
-  "short_name": "UdDog",
+  "name": "Uddog - Fundraising Platform",
+  "short_name": "Uddog",
   "description": "The world's most trusted fundraising platform. Help people raise money for the causes they care about most.",
   "start_url": "/",
   "display": "standalone",

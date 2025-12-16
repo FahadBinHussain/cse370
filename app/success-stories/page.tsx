@@ -147,7 +147,7 @@ export default function SuccessStoriesPage() {
             Success Stories
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-            Celebrating the incredible impact of our community's generosity and the lives changed through UdDog
+            Celebrating the incredible impact of our community's generosity and the lives changed through Uddog
           </p>
           <Button className="bg-white text-green-600 hover:bg-gray-100 text-lg px-6 py-3">
             <Heart className="w-5 h-5 mr-2" />
