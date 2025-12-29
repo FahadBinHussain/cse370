@@ -1,10 +1,10 @@
 /**
- * Pixvid API Client for Image Storage
- * https://pixvid.io
+ * Pixvid (Chevereto) Image Storage Client
+ * API Documentation: https://pixvid.org/api
  */
 
 const PIXVID_API_KEY = process.env.PIXVID_API_KEY;
-const PIXVID_API_URL = 'https://api.pixvid.io/v1';
+const PIXVID_API_URL = process.env.CHEVERETO_API_URL || 'https://pixvid.org/api/1/upload';
 
 export interface PixvidUploadResponse {
   success: boolean;
@@ -16,7 +16,7 @@ export interface PixvidUploadResponse {
 /**
  * Upload an image to Pixvid
  * @param file - The file to upload (File or Blob)
- * @param folder - Optional folder path
+ * @param folder - Optional folder path (not used by Pixvid)
  * @returns Upload response with image URL
  */
 export async function uploadImageToPixvid(
@@ -28,28 +28,40 @@ export async function uploadImageToPixvid(
       throw new Error('Pixvid API key is not configured');
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', folder);
+    // Convert file to base64 as required by Chevereto API
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64 = buffer.toString('base64');
 
-    const response = await fetch(`${PIXVID_API_URL}/upload`, {
+    const formData = new FormData();
+    formData.append('source', base64);
+    formData.append('format', 'json');
+
+    const response = await fetch(PIXVID_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${PIXVID_API_KEY}`,
+        'X-API-Key': PIXVID_API_KEY,
       },
       body: formData,
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Upload failed');
+      const errorText = await response.text();
+      console.error('Pixvid API error response:', errorText);
+      throw new Error(`Upload failed with status ${response.status}`);
     }
 
     const data = await response.json();
+    
+    // Chevereto returns data in a specific format
+    if (data.status_code !== 200) {
+      throw new Error(data.error?.message || 'Upload failed');
+    }
+
     return {
       success: true,
-      url: data.url,
-      id: data.id,
+      url: data.image.url,
+      id: data.image.id || data.image.id_encoded || '',
     };
   } catch (error) {
     console.error('Pixvid upload error:', error);
@@ -67,16 +79,18 @@ export async function uploadImageToPixvid(
  * @param imageId - The ID of the image to delete
  * @returns Success status
  */
-export async function deleteImageFromPixvid(imageId: string): Promise<boolean> {
+export async function deleteImageFromPixvid(imageId: string, provider?: string): Promise<boolean> {
   try {
     if (!PIXVID_API_KEY) {
       throw new Error('Pixvid API key is not configured');
     }
 
-    const response = await fetch(`${PIXVID_API_URL}/delete/${imageId}`, {
+    const deleteUrl = process.env.PIXVID_DELETE_URL || `${PIXVID_API_URL.replace('/upload', '')}/${imageId}`;
+
+    const response = await fetch(deleteUrl, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${PIXVID_API_KEY}`,
+        'X-API-Key': PIXVID_API_KEY,
       },
     });
 
