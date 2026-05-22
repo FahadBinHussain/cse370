@@ -63,3 +63,9 @@ A modern, full-stack fundraising platform built with Next.js, enabling users to 
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributors
+
+<a href="https://github.com/FahadBinHussain/uddog/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=FahadBinHussain/uddog" alt="Contributors" />
+</a>
